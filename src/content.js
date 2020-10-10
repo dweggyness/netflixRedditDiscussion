@@ -19,7 +19,7 @@ function createSearchString(name, episode) {
             episode.lastIndexOf(":")
         ))
         episodeNum = parseInt(episode.substring(
-            episode.lastIndexOf("E") + 1,
+            episode.lastIndexOf(":") + 2,
             episode.length
         ))
         searchString += `+Season+${seasonNum}+Episode+${episodeNum}`
@@ -46,15 +46,25 @@ function addDisplay(listOfPosts) {
         score.textContent = post.score
         comments.textContent = `${post.comments} comments`
 
-        const postLink = document.createElement('a');
-        postLink.className = 'postLink';
-        postLink.href = post.link;
-        postLink.textContent = post.title;
+        const postDetails = document.createElement('div');
+        postDetails.className = 'postDetails';
 
+        const postTitle = document.createElement('a');
+        const postLink = document.createElement('span');
+        postLink.className = 'postLink';
+        postLink.textContent = post.url.replace('https://www.', '');
+        postTitle.className = 'postTitle';
+        postTitle.href = post.url;
+        postTitle.target = "_blank"
+        postTitle.rel = "noopener noreferrer"
+        postTitle.textContent = post.title;
+
+        postDetails.appendChild(postTitle)
+        postDetails.appendChild(postLink)
         postScore.appendChild(score)
         postScore.appendChild(comments)
         postContainer.appendChild(postScore)
-        postContainer.appendChild(postLink)
+        postContainer.appendChild(postDetails)
 
         mainElement.appendChild(postContainer)
     })
@@ -89,7 +99,7 @@ async function handleVideoEnd() {
     chrome.runtime.sendMessage(
         {message: "searchForRedditLink", query: searchString},
         listOfPosts => {
-            addDisplay([listOfPosts])
+            addDisplay(listOfPosts)
         }
     );
 

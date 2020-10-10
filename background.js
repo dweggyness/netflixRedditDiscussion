@@ -21,17 +21,29 @@ function getRedditPostIDFromURL(url) {
   return id
 }
 
-// given reddit post url, returns the title and score of the post
-async function getRedditPostTitleAndScore(url) {
-  const permaLinkID = getRedditPostIDFromURL(url);
-  const queryURL = `https://api.reddit.com/api/info/?id=t3_${permaLinkID}`
+// given a list of reddit URLs, returns a list of objects containing the title and score of the post
+async function getRedditPosts(listOfUrls) {
+  let queryString = ''
+  listOfUrls.forEach(url => {
+    const permaLinkID = getRedditPostIDFromURL(url)
+    if (queryString) queryString += ',' // add comma separator if there are already other items
+    queryString += `t3_${permaLinkID}`
+  })
+
+  const queryURL = `https://api.reddit.com/api/info/?id=${queryString}`
   const response = await fetch(queryURL)
   const jsonData = await response.json()
 
-  const postData = jsonData.data.children[0].data
-  const { title, score, num_comments: comments } = postData
+  responseList = []
+  const posts = jsonData.data.children
+  posts.forEach(post => {
+    const { url, title, score, num_comments: comments } = post.data
+    responseList.push({ url, title, score, comments })
+  })
 
-  return { title, score, comments }
+  console.log('posts', posts)
+
+  return responseList
 }
 
 async function searchForRedditLink(request) {
@@ -42,12 +54,17 @@ async function searchForRedditLink(request) {
   let parser = new DOMParser();
   let document2 = parser.parseFromString(startPageHTML, "text/html");
 
-  link = document2.getElementsByClassName('w-gl__result-url')[0].href;
+  topThreeResults = []
+  // list of results, we iterate through it and put in the top 3 that 
+  results = document2.getElementsByClassName('w-gl__result-url');
+  for (let i = 0; i < 3; i++) {
+    topThreeResults.push(results[i].href)
+  }
 
-  linkDetails = await getRedditPostTitleAndScore(link)
 
-  responseObj = { link, title: linkDetails.title, score: linkDetails.score, comments: linkDetails.comments }
-  return responseObj
+  listOfRedditPosts = await getRedditPosts(topThreeResults)
+
+  return listOfRedditPosts
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

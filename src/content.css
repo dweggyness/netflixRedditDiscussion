@@ -1,6 +1,7 @@
 #netflixttContainer {
-    height: 20em;
-    background-color: black;
+    animation: fadeIn ease 0.3s forwards;
+    background-color: #1f1f1f;
+    color: #f5f5f5;
     display: flex;
     flex-direction: column;
 
@@ -9,35 +10,69 @@
     right: 5em;
 }
 
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity:1;
+    }
+}
+
 .postContainer {
     display: flex;
-    flex: 3;
     justify-content: center;
     padding: 1em;
 }
 
 .postScore {
-    display: column;
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 0;
     justify-content: center;
+    align-items: center;
 }
 
 .postScore h3 {
     font-size: 2em;
     color: rgb(255, 69, 0);
     text-align: center;
+    margin: 0;
 }
 
 .postScore span {
     font-size: 1.2em;
     text-align: center;
+    
+    overflow: hidden;
+}
+
+.postDetails {
+    display: flex;
+    flex-direction: column;
+    flex: 4 0 0;
+
+    overflow: hidden;
+}
+
+.postTitle {
+    font-size: 2em;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .postLink {
-    font-size: 2em;
+    font-size: 1.2em;
+    color: #c5c5c5;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.postLink::hover {
+.postTitle::hover {
     color: lightsalmon;
     transition: 0.1s all;
 }
