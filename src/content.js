@@ -30,7 +30,8 @@ function createSearchString(name, episode) {
 }
 
 function addDisplay(listOfPosts) {
-    const container = document.getElementsByClassName('SeamlessControls--container')[0]
+    const container = document.getElementsByClassName('SeamlessControls--container')[0] 
+        || document.getElementsByClassName('OriginalsPostPlay-BackgroundTrailer')[0]
 
     const mainElement = document.createElement('section');
     mainElement.id = 'netflixttContainer'
