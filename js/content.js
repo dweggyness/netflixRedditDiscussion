@@ -1,5 +1,29 @@
+
+/*
+Creates a string to be used with search engine
+@param {string} name - name of the show, 'John Wick', 'Brooklyn Nine-Nine'
+@param {string=} episode - season:episode, 'S02:E08', 'S1:E1'
+@returns {string} A search string that can be used for search engines
+
+@example
+searchString = createSearchString('Brooklyn Nine-Nine', 'S3:E02')
+// returns 'Brooklyn+Nine-Nine+Season+3+Episode+2'
+searchString = createSearchString('John Wick', undefined)
+// returns 'John+Wick'
+*/
 function createSearchString(name, episode) {
-    searchString = name.replace(/ /g, '+')
+    searchString = name.trim().replace(/ /g, '+')
+    if (episode) {
+        seasonNum = parseInt(episode.substring(
+            1,
+            episode.lastIndexOf(":")
+        ))
+        episodeNum = parseInt(episode.substring(
+            episode.lastIndexOf("E") + 1,
+            episode.length
+        ))
+        searchString += `+Season+${seasonNum}+Episode+${episodeNum}`
+    }
     return searchString
 }
 
@@ -35,7 +59,6 @@ async function handleVideoEnd() {
         {message: "searchForRedditLink", query: searchString},
         links => {
             console.log(nameObj)
-            console.log(searchString)
             console.log(links)
         }
     );
