@@ -1,16 +1,13 @@
-chrome.runtime.onInstalled.addListener(function() {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    chrome.declarativeContent.onPageChanged.addRules([{
-      conditions: [new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostEquals: 'www.netflix.com'},
-        })
-      ],
-        actions: [new chrome.declarativeContent.ShowPageAction()]
-    }]);
-  });
-});
 
-// given post id, c93rdt,
+/*
+Gets the permalink part of a reddit post ( used to call reddit api )
+@param {string} url - url to a reddit post
+@returns {string} permalink part of reddit post
+
+@example
+getRedditPostIDFromUrl(https://www.reddit.com/r/redditdev/comments/c93rdt/how_do_i_get_json_data_of_a_specific_post_without/)
+// returns 'c93rdt'
+*/
 function getRedditPostIDFromURL(url) {
   startingIndexOfID = url.lastIndexOf("comments/") + 8
   id = url.substring(
@@ -21,7 +18,26 @@ function getRedditPostIDFromURL(url) {
   return id
 }
 
-// given a list of reddit URLs, returns a list of objects containing the title and score of the post
+/*
+Gets post information for each item in a list of reddit urls 
+@type {Post} - {
+    title: title of post
+    score: reddit score
+    url: link to the thread
+    comments: num of comments
+}
+@param {string[]} url - list of urls to reddit posts
+@returns {Posts[]} list of objects of reddit posts
+
+@example
+getRedditPosts([https://www.reddit.com/r/witcher/comments/ed6wtj/episode_discussion_s01e07_before_a_fall/])
+// returns [{
+    title: 'Episode Discussion - S01E07: Before A Fall'
+    score: 520
+    url: 'https://www.reddit.com/r/witcher/comments/ed6wtj/episode_discussion_s01e07_before_a_fall/'
+    comments: 967
+}]
+*/
 async function getRedditPosts(listOfUrls) {
   let queryString = ''
   listOfUrls.forEach(url => {
@@ -46,8 +62,30 @@ async function getRedditPosts(listOfUrls) {
   return responseList
 }
 
-async function searchForRedditLink(request) {
-  var url = `https://www.startpage.com/sp/search?q=${request.query}+discussion+site%3Areddit.com`
+/*
+Given a query to search for, attempts to find three discussion threads on reddit.com
+@type {Post} - {
+    title: title of post
+    score: reddit score
+    url: link to the thread
+    comments: num of comments
+}
+@param {string} query - query to search for, will be appended with "+discussion+site:reddit.com"
+@returns {Posts[]} list of objects of reddit posts
+
+@example
+searchForRedditLinks('The+Witcher+Season+1+Episode+7')
+// returns [{
+    title: 'Episode Discussion - S01E07: Before A Fall'
+    score: 520
+    url: 'https://www.reddit.com/r/witcher/comments/ed6wtj/episode_discussion_s01e07_before_a_fall/'
+    comments: 967
+  },
+  ... two more such objects
+]
+*/
+async function searchForRedditLinks(query) {
+  var url = `https://www.startpage.com/sp/search?q=${query}+discussion+site%3Areddit.com`
   const response = await fetch(url)
   const startPageHTML = await response.text()
   
@@ -68,9 +106,9 @@ async function searchForRedditLink(request) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.message == "searchForRedditLink") {
+    if (request.message == "searchForRedditLinks") {
       const payload = async () => {
-        const response = await searchForRedditLink(request);
+        const response = await searchForRedditLinks(request.query);
         sendResponse(response);
       }
       payload()

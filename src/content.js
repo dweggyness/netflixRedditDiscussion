@@ -29,7 +29,27 @@ function createSearchString(name, episode) {
     return searchString
 }
 
-function addDisplay(listOfPosts) {
+/*
+Creates a box on the screen that shows clickable links to discussion threads on the show
+@type {Post} - {
+    title: title of post
+    score: reddit score
+    url: link to the thread
+    comments: num of comments
+}
+@param {Post[]} posts - List of post objects
+@returns None
+
+@example
+listOfPosts = [{ 
+    title: 'Episode Discussion - S01E07: Before A Fall'
+    score: 520
+    url: 'https://www.reddit.com/r/witcher/comments/ed6wtj/episode_discussion_s01e07_before_a_fall/'
+    comments: 967
+}]
+displayRedditThreads(listOfPosts)
+*/
+function displayRedditThreads(listOfPosts) {
     const container = document.getElementsByClassName('SeamlessControls--container')[0] 
         || document.getElementsByClassName('OriginalsPostPlay-BackgroundTrailer')[0]
 
@@ -75,10 +95,19 @@ function addDisplay(listOfPosts) {
     }
 }
 
-function getMovieName() {
-    // read the name, episode and season from netflix
+/*
+Gets the movie/show name and episode (if available) from the HTML of netflix
+@type {Object} - object containing the movie name and potentially the episode
+@returns {string} A search string that can be used for search engines
 
-    try {
+@example
+// for movie
+getMovieDetails() // returns { name: 'John Wick' }
+// for show
+getMovieDetails() // returns { name: 'Brooklyn Nine-Nine', episode: 'S1:E03' }
+*/
+function getMovieDetails() {
+    try { // for show
         name = document.getElementsByClassName('ellipsize-text')[0].querySelector('h4').textContent;
 
         if (document.getElementsByClassName('ellipsize-text')[0].getElementsByTagName('span')) {
@@ -87,7 +116,7 @@ function getMovieName() {
         } else {
             return { name }
         }
-    } catch(e) {
+    } catch(e) { // title for movie has a different className
         name = document.getElementsByClassName('pp-rating-title')[0].textContent;
         return { name }
     }
@@ -98,25 +127,24 @@ async function handleVideoEnd() {
     searchString = createSearchString(nameObj.name, nameObj.episode)
 
     chrome.runtime.sendMessage(
-        {message: "searchForRedditLink", query: searchString},
+        {message: "searchForRedditLinks", query: searchString},
         listOfPosts => {
-            addDisplay(listOfPosts)
+            displayRedditThreads(listOfPosts)
         }
     );
 
 }
 
-// some code to call 'addDisplay' when episode ends
+// used to detect when the show/movie has ended.
 MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
 var target = document.querySelector("#appMountPoint");
 
-// ['SeamlessControls--container', 'PromotedVideo-actions']
-
 var observer = new MutationObserver(function(mutations, observer) {
     mutation = mutations.find(mutation => {
         var classes = [ ...mutation.target.classList ];
-        // console.log(classes.some(x => x === 'SeamlessControls--container' || x === 'PromotedVideo-actions'))
+        // watches the classes that change when episode/movie ends
+        // SeamlessControls--container if there is next episode, postplay if there is a trailer
         return classes.some(x => x === 'SeamlessControls--container' || x === 'postplay');
     })
 
