@@ -29,9 +29,9 @@ async function getRedditPostTitleAndScore(url) {
   const jsonData = await response.json()
 
   const postData = jsonData.data.children[0].data
-  const { title, score } = postData
+  const { title, score, num_comments: comments } = postData
 
-  return { title, score }
+  return { title, score, comments }
 }
 
 async function searchForRedditLink(request) {
@@ -41,14 +41,12 @@ async function searchForRedditLink(request) {
   
   let parser = new DOMParser();
   let document2 = parser.parseFromString(startPageHTML, "text/html");
-  
-  alert(`https://www.startpage.com/sp/search?q=${request.query}+discussion+site%3Areddit.com`)
 
   link = document2.getElementsByClassName('w-gl__result-url')[0].href;
 
   linkDetails = await getRedditPostTitleAndScore(link)
 
-  responseObj = { link, title: linkDetails.title, score: linkDetails.score }
+  responseObj = { link, title: linkDetails.title, score: linkDetails.score, comments: linkDetails.comments }
   return responseObj
 }
 

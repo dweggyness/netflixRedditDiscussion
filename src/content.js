@@ -29,18 +29,39 @@ function createSearchString(name, episode) {
     return searchString
 }
 
-function addDisplay(redditLinkObj) {
+function addDisplay(listOfPosts) {
     const container = document.getElementsByClassName('SeamlessControls--container')[0]
 
-    const div = document.createElement('div');
-    div.innerHTML = redditLinkObj.title
-    div.id = 'redditLinks'
+    const mainElement = document.createElement('section');
+    mainElement.id = 'netflixttContainer'
+    listOfPosts.forEach(post => {
+        const postContainer = document.createElement('div');
+        postContainer.className = 'postContainer';
+
+        const postScore = document.createElement('div');
+        postScore.className = 'postScore';
+
+        const score = document.createElement('h3');
+        const comments = document.createElement('span');
+        score.textContent = post.score
+        comments.textContent = `${post.comments} comments`
+
+        const postLink = document.createElement('a');
+        postLink.className = 'postLink';
+        postLink.href = post.link;
+        postLink.textContent = post.title;
+
+        postScore.appendChild(score)
+        postScore.appendChild(comments)
+        postContainer.appendChild(postScore)
+        postContainer.appendChild(postLink)
+
+        mainElement.appendChild(postContainer)
+    })
 
     if (!document.getElementById('redditLinks')) {
-        container.appendChild(div)
-        console.log('success')
+        container.appendChild(mainElement)
     }
-    console.log('walugi')
 }
 
 function getMovieName() {
@@ -67,8 +88,8 @@ async function handleVideoEnd() {
 
     chrome.runtime.sendMessage(
         {message: "searchForRedditLink", query: searchString},
-        links => {
-            addDisplay(links)
+        listOfPosts => {
+            addDisplay([listOfPosts])
         }
     );
 

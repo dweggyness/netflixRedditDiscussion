@@ -1,9 +1,43 @@
-#redditLinks {
-    width: 240px;
-    height: 80px;
-    background-color: red;
-    position: absolute;
+#netflixttContainer {
+    height: 20em;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
 
-    bottom: 12em;
+    position: absolute;
+    bottom: 18em;
     right: 5em;
+}
+
+.postContainer {
+    display: flex;
+    flex: 3;
+    justify-content: center;
+    padding: 1em;
+}
+
+.postScore {
+    display: column;
+    flex: 1;
+    justify-content: center;
+}
+
+.postScore h3 {
+    font-size: 2em;
+    color: rgb(255, 69, 0);
+    text-align: center;
+}
+
+.postScore span {
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.postLink {
+    font-size: 2em;
+}
+
+.postLink::hover {
+    color: lightsalmon;
+    transition: 0.1s all;
 }
