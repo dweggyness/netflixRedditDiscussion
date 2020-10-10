@@ -1,7 +1,7 @@
 {
-  "name": "Getting Started Example",
+  "name": "Netflix Reddit Discussion",
   "version": "1.0",
-  "description": "Build an Extension!",
+  "description": "Shows links to reddit discussion threads when you finish watching a Netflix video.",
   "permissions": [
     "https://*.reddit.com/",
     "https://*.startpage.com/",

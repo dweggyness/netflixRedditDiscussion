@@ -106,7 +106,7 @@ getMovieDetails() // returns { name: 'John Wick' }
 // for show
 getMovieDetails() // returns { name: 'Brooklyn Nine-Nine', episode: 'S1:E03' }
 */
-function getMovieDetails() {
+function getMovieName() {
     try { // for show
         name = document.getElementsByClassName('ellipsize-text')[0].querySelector('h4').textContent;
 
