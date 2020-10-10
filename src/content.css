@@ -1,0 +1,9 @@
+#redditLinks {
+    width: 240px;
+    height: 80px;
+    background-color: red;
+    position: absolute;
+
+    bottom: 12em;
+    right: 5em;
+}
