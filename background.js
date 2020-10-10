@@ -57,8 +57,6 @@ async function getRedditPosts(listOfUrls) {
     responseList.push({ url, title, score, comments })
   })
 
-  console.log('posts', posts)
-
   return responseList
 }
 
